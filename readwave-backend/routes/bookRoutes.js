@@ -1,6 +1,7 @@
 // routes/bookRoutes.js
 const express = require('express');
 const router = express.Router();
+const { protect, isAdmin } = require('../middlewares/authMiddleware');
 const {
   addBook,
   getAllBooks,
@@ -9,11 +10,13 @@ const {
   deleteBook
 } = require('../controllers/bookController');
 
-// Public or protected depending on your future auth logic
-router.post('/', addBook);             // Add book
-router.get('/', getAllBooks);          // Get all books
-router.get('/:id', getBookById);       // Get book by ID
-router.put('/:id', updateBook);        // Update book
-router.delete('/:id', deleteBook);     // Delete book
+// 🔐 Admin-protected routes
+router.post('/', protect, isAdmin, addBook);
+router.put('/:id', protect, isAdmin, updateBook);
+router.delete('/:id', protect, isAdmin, deleteBook);
+
+// 📖 Public or logged-in user routes
+router.get('/', getAllBooks);
+router.get('/:id', getBookById);
 
 module.exports = router;
