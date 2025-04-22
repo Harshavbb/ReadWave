@@ -14,6 +14,9 @@ console.log('✅ authRoutes loaded', typeof authRoutes);
 const bookRoutes = require('./routes/bookRoutes');
 console.log('✅ bookRoutes loaded', typeof bookRoutes);
 const bookRequestRoutes = require('./routes/bookRequestRoutes');
+const userRoutes = require('./routes/userRoutes');
+
+
 
 const app = express();
 console.log('✅ express app initialized');
@@ -26,6 +29,7 @@ app.use(express.json());
 app.use('/api/auth', authRoutes);
 app.use('/api/books', bookRoutes);
 app.use('/api/book-requests', bookRequestRoutes);
+app.use('/api/users', userRoutes);
 
 app.get('/', (req, res) => {
   res.send('Welcome to Readwave Library API');

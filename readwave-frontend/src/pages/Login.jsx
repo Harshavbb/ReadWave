@@ -1,6 +1,9 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import Img from '../assets/login1.svg';
+import API from '../utils/axios';
+import { useNavigate } from 'react-router-dom';
+
 
 const Login = () => {
   const [formData, setFormData] = useState({
@@ -14,10 +17,29 @@ const Login = () => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e) => {
+  const navigate = useNavigate();
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log(formData); // Replace with actual login logic/API call
+    try {
+      const res = await API.post('/auth/login', formData);
+      
+      // Access token and user from res.data
+      const { token, user } = res.data;
+  
+      // Store them in localStorage
+      localStorage.setItem('token', token);
+      localStorage.setItem('user', JSON.stringify(user));
+  
+      // Navigate to dashboard
+      navigate('/dashboard');
+    } catch (error) {
+      console.error(error);
+      alert(error?.response?.data?.message || 'Login failed');
+    }
   };
+  
+  
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 to-purple-100 flex items-center justify-center px-4">

@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
-import { Eye, EyeOff } from 'lucide-react'; // Optional icon library
+import { Link, useNavigate } from 'react-router-dom';
+import { Eye, EyeOff } from 'lucide-react';
 import Img from '../assets/register.svg';
+import API from '../utils/axios'; // Make sure this points to your axios instance
 
 const Register = () => {
   const [formData, setFormData] = useState({
@@ -16,13 +17,28 @@ const Register = () => {
   });
 
   const [showPassword, setShowPassword] = useState(false);
+  const navigate = useNavigate();
 
-  const handleChange = (e) =>
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData({
+      ...formData,
+      [name]: name === 'year' ? parseInt(value) || '' : value,
+    });
+  };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log(formData);
+    try {
+      const res = await API.post('/auth/register', formData);
+      if (res.data.token) {
+        localStorage.setItem('token', res.data.token);
+        navigate('/dashboard');
+      }
+    } catch (error) {
+      console.error(error);
+      alert(error?.response?.data?.message || 'Registration failed');
+    }
   };
 
   return (

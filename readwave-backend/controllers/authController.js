@@ -3,10 +3,16 @@ const User = require('../models/User');
 const jwt = require('jsonwebtoken');
 
 // 🔐 Generate JWT token
-const generateToken = (userId) => {
-  return jwt.sign({ id: userId }, process.env.JWT_SECRET, {
-    expiresIn: '7d',
-  });
+// 🔐 Generate JWT token with role
+const generateToken = (user) => {
+  return jwt.sign(
+    {
+      id: user._id,
+      role: user.role, // ✅ include role
+    },
+    process.env.JWT_SECRET,
+    { expiresIn: '7d' }
+  );
 };
 
 // ✅ Register new user
@@ -29,7 +35,8 @@ exports.register = async (req, res) => {
       department,
     });
 
-    const token = generateToken(user._id);
+    const token = generateToken(user);
+
 
     res.status(201).json({
       user: {
@@ -65,7 +72,8 @@ exports.login = async (req, res) => {
     if (!isMatch)
       return res.status(400).json({ message: 'Invalid credentials' });
 
-    const token = generateToken(user._id);
+    const token = generateToken(user);
+
 
     res.status(200).json({
       user: {
